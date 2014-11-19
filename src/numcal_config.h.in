@@ -1,0 +1,4 @@
+// the configured options and settings for numcal
+#define numcal_VERSION_MAJOR @numcal_VERSION_MAJOR@
+#define numcal_VERSION_MINOR @numcal_VERSION_MINOR@
+#define numcal_VERSION_PATCH @numcal_VERSION_PATCH@
