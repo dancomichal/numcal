@@ -78,7 +78,7 @@ void SetIntegrand(int id) {
 		break;
 	default:
 		printf("Error : Integrand id=%d was not found !!!\n", id);
-		exit(1);
+		help (stderr, 3);
 		break;
 	}
 }
