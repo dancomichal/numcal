@@ -54,11 +54,11 @@ void help(FILE *stream, int exit_code) {
 			numcal_VERSION_MAJOR, numcal_VERSION_MINOR ,numcal_VERSION_PATCH);
 	fprintf(stream, "Usage options\n");
 	fprintf(stream, "  -h --help          Display this information\n"
-	        "  -v --verbose <num> Verbose level\n"
-			"  -f --fun <id>      Function id\n"
-			"  -s --seed <num>    Seed\n"
+	        "  -v --verbose <num> Verbose level (default 0)\n"
+			"  -f --fun <id>      Function id (default -1)\n"
+			"  -s --seed <num>    Seed (default 0)\n"
 			"  -c --calc <id>     Calculation method :\n"
-			"                       0 : Vegas\n"
+			"                       0 : Vegas (default)\n"
 			"                       1 : Suave\n"
 			"                       2 : Divonne\n"
 	        "                       3 : Cuhre\n"
