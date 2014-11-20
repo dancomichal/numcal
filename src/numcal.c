@@ -8,15 +8,15 @@
 #include "testfun.h"
 #include "3loop_fun12.h"
 
-#define NDIM 10
+//#define NDIM 10
 #define NCOMP 1
 #define USERDATA NULL
 #define NVEC 1
-#define EPSREL 1e-7
-#define EPSABS 1e-7
+//#define EPSREL 1e-7
+//#define EPSABS 1e-7
 #define LAST 4
 #define MINEVAL 0
-#define MAXEVAL 1000000000
+//#define MAXEVAL 1000000000
 
 #define NSTART 100
 #define NINCREASE 10000
@@ -36,7 +36,7 @@
 #define MAXCHISQ 10.
 #define MINDEVIATION .25
 #define NGIVEN 0
-#define LDXGIVEN NDIM
+//#define LDXGIVEN NDIM
 #define NEXTRA 0
 
 #define KEY 0
@@ -62,6 +62,10 @@ void help(FILE *stream, int exit_code) {
 			"                       1 : Suave\n"
 			"                       2 : Divonne\n"
 	        "                       3 : Cuhre\n"
+			"  --ndim <num>       Num dimensions (default 10)\n"
+			"  --maxeval <num>    Maxeal (default 1000000000)\n"
+			"  --epsrel <num>     Epsrel (default 1e-7)\n"
+			"  --epsabs <num>     Epsabs (default 1e-7)\n"
 			"");
 
 	exit(exit_code);
@@ -88,7 +92,7 @@ int main(int argc, char **argv) {
 	int next_option;
 
 	/* A string listing valid short options letters. */
-	const char * const short_options = "hf:s:c:v:";
+	const char * const short_options = "hf:s:c:v:100";
 	/* An array describing valid long options. */
 	const struct option long_options[] = {
 			{ "help", 0, NULL, 'h' },
@@ -96,6 +100,10 @@ int main(int argc, char **argv) {
 			{ "seed", 1, NULL, 's' },
 			{ "calc", 1, NULL, 'c' },
 			{ "verbose", 1, NULL, 'v' },
+			{ "ndim", 1, NULL, 1000 },
+			{ "maxeval", 1, NULL, 1001 },
+			{ "epsrel", 1, NULL, 1002 },
+			{ "epsabs", 1, NULL, 1003 },
 			{ NULL, 0, NULL, 0 } };
 
 	/* Setting program name */
@@ -103,9 +111,15 @@ int main(int argc, char **argv) {
 
 	int seed = 0;
 	int fun_id = -1;
-	int cal_type = 0;
+	int calc = 0;
 	int verbose = 0;
 
+	int ndim = 10;
+	long int maxeval = 1e9;
+	double epsrel = 1e-7;
+	double epsabs = 1e-7;
+
+	int ldxfiven = ndim;
 	do {
 		next_option = getopt_long(argc, argv, short_options, long_options,
 				NULL);
@@ -120,10 +134,23 @@ int main(int argc, char **argv) {
 			seed = atoi(optarg);
 			break;
 		case 'c':
-			cal_type = atoi(optarg);
+			calc = atoi(optarg);
 			break;
 		case 'v':
 			verbose = atoi(optarg);
+			break;
+		case 1000:
+			ndim = atoi(optarg);
+			ldxfiven = ndim;
+			break;
+		case 1001:
+			maxeval = atol(optarg);
+			break;
+		case 1002:
+			epsrel = atof(optarg);
+			break;
+		case 1003:
+			epsabs = atof(optarg);
 			break;
 		case '?':
 			/* The user specified an invalid option. */
@@ -145,14 +172,27 @@ int main(int argc, char **argv) {
 	int comp, nregions, neval, fail;
 	double integral[NCOMP], error[NCOMP], prob[NCOMP];
 
+	if (verbose > 1) {
+		printf("*** numcal parameters **********\n");
+		printf("* fun     = %d\n", fun_id);
+		printf("* seed    = %d\n", seed);
+		printf("* calc    = %d\n", calc);
+		printf("* ndim    = %d\n", ndim);
+		printf("* maxeval = %ld\n", maxeval);
+		printf("* epsrel  = %e\n", epsrel);
+		printf("* epsabs  = %e\n", epsabs);
+		printf("********************************\n");
+	}
+
+
 	SetIntegrand(fun_id);
 
-	switch (cal_type) {
+	switch (calc) {
 	case 0:
 		printf("-------------------- Vegas test --------------------\n");
-		Vegas(NDIM, NCOMP, Integrand_3loop_fun12, USERDATA, NVEC,
-		EPSREL, EPSABS, verbose, seed,
-		MINEVAL, MAXEVAL, NSTART, NINCREASE, NBATCH,
+		Vegas(ndim, NCOMP, Integrand_3loop_fun12, USERDATA, NVEC,
+		epsrel, epsabs, verbose, seed,
+		MINEVAL, maxeval, NSTART, NINCREASE, NBATCH,
 		GRIDNO, STATEFILE, SPIN, &neval, &fail, integral, error, prob);
 		printf("VEGAS RESULT:\tneval %d\tfail %d\n", neval, fail);
 		for (comp = 0; comp < NCOMP; ++comp)
@@ -161,9 +201,9 @@ int main(int argc, char **argv) {
 		break;
 	case 1:
 		printf("-------------------- Suave test --------------------\n");
-		Suave(NDIM, NCOMP, gIntergand, USERDATA, NVEC,
-		EPSREL, EPSABS, verbose | LAST, seed,
-		MINEVAL, MAXEVAL, NNEW, FLATNESS,
+		Suave(ndim, NCOMP, gIntergand, USERDATA, NVEC,
+		epsrel, epsabs, verbose | LAST, seed,
+		MINEVAL, maxeval, NNEW, FLATNESS,
 		STATEFILE, SPIN, &nregions, &neval, &fail, integral, error, prob);
 
 		printf("SUAVE RESULT:\tnregions %d\tneval %d\tfail %d\n", nregions,
@@ -176,11 +216,11 @@ int main(int argc, char **argv) {
 
 		printf("\n------------------- Divonne test -------------------\n");
 
-		Divonne(NDIM, NCOMP, gIntergand, USERDATA, NVEC,
-		EPSREL, EPSABS, verbose, seed,
-		MINEVAL, MAXEVAL, KEY1, KEY2, KEY3, MAXPASS,
+		Divonne(ndim, NCOMP, gIntergand, USERDATA, NVEC,
+		epsrel, epsabs, verbose, seed,
+		MINEVAL, maxeval, KEY1, KEY2, KEY3, MAXPASS,
 		BORDER, MAXCHISQ, MINDEVIATION,
-		NGIVEN, LDXGIVEN, NULL, NEXTRA, NULL,
+		NGIVEN, ldxfiven, NULL, NEXTRA, NULL,
 		STATEFILE, SPIN, &nregions, &neval, &fail, integral, error, prob);
 
 		printf("DIVONNE RESULT:\tnregions %d\tneval %d\tfail %d\n", nregions,
@@ -192,9 +232,9 @@ int main(int argc, char **argv) {
 	case 3:
 		printf("\n-------------------- Cuhre test --------------------\n");
 
-		Cuhre(NDIM, NCOMP, gIntergand, USERDATA, NVEC,
-		EPSREL, EPSABS, verbose | LAST,
-		MINEVAL, MAXEVAL, KEY,
+		Cuhre(ndim, NCOMP, gIntergand, USERDATA, NVEC,
+		epsrel, epsabs, verbose | LAST,
+		MINEVAL, maxeval, KEY,
 		STATEFILE, SPIN, &nregions, &neval, &fail, integral, error, prob);
 
 		printf("CUHRE RESULT:\tnregions %d\tneval %d\tfail %d\n", nregions,
