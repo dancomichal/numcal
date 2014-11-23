@@ -66,7 +66,7 @@ void help(FILE *stream, int exit_code) {
 			"  --maxeval <num>    Maxeal (default 1000000000)\n"
 			"  --epsrel <num>     Epsrel (default 1e-7)\n"
 			"  --epsabs <num>     Epsabs (default 1e-7)\n"
-			"");
+			"\n");
 
 	exit(exit_code);
 }
