@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
 # The version number.
 set (numcal_VERSION_MAJOR 0)
 set (numcal_VERSION_MINOR 1)
-set (numcal_VERSION_PATCH 0)
+set (numcal_VERSION_PATCH 1)
 
 # configure a header file to pass some of the CMake settings
 # to the source code
@@ -40,4 +40,3 @@ CONFIGURE_FILE(
 
 ADD_CUSTOM_TARGET(uninstall
   "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
-
