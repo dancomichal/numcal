@@ -7,6 +7,7 @@
 
 #include "testfun.h"
 #include "3loop_fun12.h"
+#include "3loop_fun33.h"
 
 //#define NDIM 10
 #define NCOMP 1
@@ -72,13 +73,15 @@ void help(FILE *stream, int exit_code) {
 }
 
 void SetIntegrand(int id) {
-
 	switch (id) {
 	case 1:
 		gIntergand = (integrand_t) IntegrandTest;
 		break;
 	case 12:
 		gIntergand = (integrand_t) Integrand_3loop_fun12;
+		break;
+	case 33:
+		gIntergand = (integrand_t) Integrand_3loop_fun33;
 		break;
 	default:
 		printf("Error : Integrand id=%d was not found !!!\n", id);
@@ -190,7 +193,7 @@ int main(int argc, char **argv) {
 	switch (calc) {
 	case 0:
 		printf("-------------------- Vegas test --------------------\n");
-		Vegas(ndim, NCOMP, Integrand_3loop_fun12, USERDATA, NVEC,
+		Vegas(ndim, NCOMP, gIntergand, USERDATA, NVEC,
 		epsrel, epsabs, verbose, seed,
 		MINEVAL, maxeval, NSTART, NINCREASE, NBATCH,
 		GRIDNO, STATEFILE, SPIN, &neval, &fail, integral, error, prob);
